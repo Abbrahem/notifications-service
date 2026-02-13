@@ -169,20 +169,25 @@ class NotificationService {
   async sendToAdmins(notification, data = {}) {
     try {
       const db = await getDB();
-      const admins = await db.collection('users')
+      
+      // البحث في fcmTokens collection
+      const adminTokens = await db.collection('fcmTokens')
         .find({ 
-          role: 'admin',
-          fcmToken: { $exists: true, $ne: null }
+          userType: 'admin',
+          token: { $exists: true, $ne: null }
         })
+        .sort({ lastUsed: -1 })
         .toArray();
 
+      console.log(`📤 Found ${adminTokens.length} admin tokens`);
+
       const results = [];
-      for (const admin of admins) {
+      for (const tokenDoc of adminTokens) {
         try {
-          const result = await this.sendToToken(admin.fcmToken, notification, data);
-          results.push({ userId: admin._id, success: true });
+          const result = await this.sendToToken(tokenDoc.token, notification, data);
+          results.push({ token: tokenDoc.token.substring(0, 20) + '...', success: true });
         } catch (error) {
-          results.push({ userId: admin._id, success: false, error: error.message });
+          results.push({ token: tokenDoc.token.substring(0, 20) + '...', success: false, error: error.message });
         }
       }
 
