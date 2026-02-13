@@ -27,8 +27,8 @@ class NotificationService {
       const message = {
         notification: {
           title: notification.title,
-          body: notification.body,
-          icon: notification.icon || '/icon-192x192.png'
+          body: notification.body
+          // شلنا icon من هنا - Firebase مش بيقبله
         },
         data: {
           ...data,
@@ -110,8 +110,8 @@ class NotificationService {
     const message = {
       notification: {
         title: notification.title,
-        body: notification.body,
-        icon: notification.icon || '/icon-192x192.png'
+        body: notification.body
+        // شلنا icon من هنا
       },
       data: {
         ...data,
